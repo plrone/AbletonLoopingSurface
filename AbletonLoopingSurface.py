@@ -11,11 +11,12 @@ from _Framework.InputControlElement import MIDI_NOTE_TYPE
 
 MIDI_CHANNEL = 0
 
-RECORD_2_NOTE = 67
-RECORD_4_NOTE = 79
-
-METRO_NOTE = 71
-DELETE_NOTE = 72
+QUANTIZE_NOTE = 68   # G#3
+METRO_NOTE    = 70   # A#3
+RECORD_2_NOTE = 67   # G3
+RECORD_4_NOTE = 69   # A3
+UNDO_NOTE     = 71   # B3
+DELETE_NOTE   = 72   # C4
 
 
 # ==============================
@@ -81,6 +82,31 @@ class AbletonLoopingSurface(ControlSurface):
 
             self._delete_button.add_value_listener(
                 self._delete_clip
+            )
+
+            # UNDO
+            self._undo_button = ButtonElement(
+                True,
+                MIDI_NOTE_TYPE,
+                MIDI_CHANNEL,
+                UNDO_NOTE
+            )
+
+            self._undo_button.add_value_listener(
+                self._undo
+            )
+
+
+            # QUANTIZE
+            self._quantize_button = ButtonElement(
+                True,
+                MIDI_NOTE_TYPE,
+                MIDI_CHANNEL,
+                QUANTIZE_NOTE
+            )
+
+            self._quantize_button.add_value_listener(
+                self._quantize
             )
 
 
@@ -153,3 +179,64 @@ class AbletonLoopingSurface(ControlSurface):
             clip_slot.delete_clip()
 
             self.log_message("Clip deleted")
+
+
+# ==============================
+# UNDO
+# ==============================
+
+    def _undo(self, value):
+
+        if value == 0:
+            return
+
+        if self.song().can_undo:
+
+            self.song().undo()
+
+            self.log_message("Undo")
+
+
+# ==============================
+# QUANTIZE
+# ==============================
+
+    def _quantize(self, value):
+
+        if value == 0:
+            return
+
+        song = self.song()
+        clip_slot = song.view.highlighted_clip_slot
+
+        if not clip_slot or not clip_slot.has_clip:
+            self.log_message("No clip selected")
+            return
+
+        clip = clip_slot.clip
+
+        if not clip.is_midi_clip:
+            self.log_message("Not a MIDI clip")
+            return
+
+
+        # toggle strength
+        if not hasattr(self, "_quantize_strength"):
+            self._quantize_strength = 1.0
+
+
+        if self._quantize_strength == 1.0:
+            self._quantize_strength = 0.5
+        else:
+            self._quantize_strength = 1.0
+
+
+        clip.quantize(
+            Live.Clip.GridQuantization.g_sixteenth,
+            self._quantize_strength
+        )
+
+
+        self.log_message(
+            "Quantize strength: " + str(int(self._quantize_strength * 100)) + "%"
+        )

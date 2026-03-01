@@ -1,12 +1,22 @@
 # AbletonLoopingSurface
 
-Ableton Live 12 Control Surface script that lets you record fixed-length clips, toggle metronome, and delete the currently selected clip in Session View using MIDI notes.
+Ableton Live 12 Control Surface script that adds fixed-length recording, undo, quantize, delete, and metronome control via MIDI in Session View.
+
+If this script improves your workflow and helps your live looping setup, consider supporting its development.
+
+You can buy me a coffee here:
+
+☕ https://buymeacoffee.com/hazedrifter
+
+Thank you for your support and happy looping!
 
 ## Features
 
-- Toggle metronome via MIDI
-- Delete selected clip via MIDI
-- Fully quantized recording (same method as Ableton Push)
+- Delete selected clip
+- Undo last action
+- Fixed length clip recording (same method as Ableton Push)
+- Quantize with two strength levels (first press: 50%, second press: 100%)
+- Metronome toggle
 - Supports all Ableton editions (including Lite)
 - Lightweight, no dependencies
 
@@ -80,22 +90,22 @@ Edit:
 
 ```AbletonLoopingSurface.py```
 
-```ruby
-MIDI_CHANNEL = 0
-
-RECORD_2_NOTE = 67
-RECORD_4_NOTE = 79
-
-METRO_NOTE = 71
-DELETE_NOTE = 72
+```python
+QUANTIZE_NOTE = 68   # G#3
+METRO_NOTE    = 70   # A#3
+RECORD_2_NOTE = 67   # G3
+RECORD_4_NOTE = 69   # A3
+UNDO_NOTE     = 71   # B3
+DELETE_NOTE   = 72   # C4
 ```
 
 Default notes: 
 
-- **G3** - rec 2 bars
-- **A3** - rec 4 bars
-- **B3** - metro toggle
-- **C4** - delete selected clip (usually last key on mini keyboards)
+- **G#3** - Quantize
+- **A#3** - Metro toggle
+- **G3** - Rec 2 bars
+- **A3** - Rec 4 bars
+- **C4** - Delete selected clip
 
 You can bind functions on less used range.
 
